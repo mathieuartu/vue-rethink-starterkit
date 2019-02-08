@@ -1,3 +1,4 @@
 export default {
-  movieList: []
+  isAuthenticated: false,
+  user: {},
 }

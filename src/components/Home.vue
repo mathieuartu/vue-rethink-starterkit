@@ -1,23 +1,16 @@
 <template>
   <div class="hello">
-    <Menu />
-    <MovieSearchInput />
-    <MovieList />
+    <Menu/>
   </div>
 </template>
 
 <script>
-
-import Menu from './Menu'
-import MovieList from './MovieList'
-import MovieSearchInput from './MovieSearchInput'
+import Menu from "./Menu"
 
 export default {
-  name: 'Home',
+  name: "Home",
   components: {
-    Menu,
-    MovieList,
-    MovieSearchInput
+    Menu
   }
 }
 </script>

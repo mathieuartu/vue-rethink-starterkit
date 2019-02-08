@@ -1,4 +1,5 @@
 import r from 'rethinkdb'
+import bcrypt from 'bcrypt' //dev only
 
 export const rethink = cb => {
   r.connect({
@@ -23,31 +24,34 @@ export const sendJson = (err, response, res) => {
 export const initDb = c => {
   r.tableDrop('users').run(c, (err, res) => {
     r.tableCreate('users').run(c, (err, res) => {
-      r.table('users').insert([
-        {
-          username: 'admin',
-          email: 'admin@admin.com',
-          clothes: [
-            {
-              type: 'hat',
-              contents: [
-                {
-                  name: 'Casquette Norse Projects',
-                  color: 'black',
-                  picture_url: 'blabla.jpg'
-                },
-                {
-                  name: 'Casquette Champion',
-                  color: 'green',
-                  picture_url: 'blabla.jpg'
-                }
-              ]
-            }
-          ]
-        }
-      ]).run(c, (err, res) => {
-        if (err) throw err
-        // console.log(JSON.stringify(res, null, 2))
+      bcrypt.hash('admin', 10).then(hash => {
+        r.table('users').insert([
+          {
+            username: 'admin',
+            hash,
+            email: 'admin@admin.com',
+            clothes: [
+              {
+                type: 'hat',
+                contents: [
+                  {
+                    name: 'Casquette Norse Projects',
+                    color: 'black',
+                    picture_url: 'blabla.jpg'
+                  },
+                  {
+                    name: 'Casquette Champion',
+                    color: 'green',
+                    picture_url: 'blabla.jpg'
+                  }
+                ]
+              }
+            ]
+          }
+        ]).run(c, (err, res) => {
+          if (err) throw err
+          // console.log(JSON.stringify(res, null, 2))
+        })
       })
     })
 

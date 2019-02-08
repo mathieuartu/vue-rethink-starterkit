@@ -1,5 +1,6 @@
 export default {
-  updateMovieList (state, movieList) {
-    state.movieList = movieList
+  updateUser(state, user) {
+    state.isAuthenticated = true
+    state.user = user
   }
 }
