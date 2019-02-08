@@ -1,6 +1,12 @@
 export default {
-  updateUser(state, user) {
+  logUserIn(state, data) {
     state.isAuthenticated = true
-    state.user = user
+    state.user = data.user
+    state.token = data.token
+  },
+  logUserOut(state) {
+    state.isAuthenticated = false
+    state.user = null
+    state.token = null
   }
 }

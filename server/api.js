@@ -1,21 +1,27 @@
 import express from 'express'
 import r from 'rethinkdb'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
 import { rethink, sendJson } from './rethinkdb.js'
 
 export const routes = express.Router();
 
+dotenv.load()
+
+const secret = process.env.SECRET
+
 //Error helpers
-const generateErrorMessage = message => {
+const generateErrorMessage = content => {
   return {
-    message,
+    content,
     error: true,
   }
 }
 
-const generateSuccessMessage = data => {
+const generateSuccessMessage = content => {
   return {
-    data,
+    content,
     error: false,
   }
 }
@@ -43,11 +49,17 @@ routes.post('/api/users/login', (req, res) => {
     r.table('users').filter({ username: req.body.username }).run(c, (err, response) => {
       response.toArray((err, response) => {
         const userExists = response.length > 0
+        const user = response[0]
         if (userExists) {
-          const user = response[0]
           bcrypt.compare(req.body.password, user.hash).then(isPasswordChecked => {
             if (isPasswordChecked) {
-              res.send(generateSuccessMessage(user))
+              //JWT
+              jwt.sign({ user }, secret, { expiresIn: '1h' }, (err, token) => {
+                if (err) console.log(err)
+                res.send(generateSuccessMessage({
+                  token,
+                }))
+              })
             } else {
               res.send(generateErrorMessage('password_does_not_match'))
             }
@@ -75,9 +87,16 @@ routes.post('/api/users/signup', (req, res) => {
               username,
               hash,
             }).run(c, (err, response) => {
-              r.table('users').get(response.generated_keys[0]).run(c, (err, response) => {
-                //Send back the user object
-                res.send(generateSuccessMessage(response))
+              const key = response.generated_keys[0]
+              r.table('users').get(key).run(c, (err, response) => {
+                //Send back the user object and log him in
+                //JWT
+                jwt.sign({ key }, secret, { expiresIn: '1h' }, (err, token) => {
+                  if (err) console.log(err)
+                  res.send(generateSuccessMessage({
+                    token,
+                  }))
+                })
               })
             })
           })

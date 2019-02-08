@@ -1,8 +1,5 @@
 <template>
   <div class="menu">
-    <h1>
-      <router-link to="/">Cinerank</router-link>
-    </h1>
     <ul>
       <li v-for="item in menu" :key="item.title">
         <router-link :to="item.link">{{item.title}}</router-link>
@@ -21,6 +18,10 @@ export default {
           {
             title: "Accueil",
             link: "/"
+          },
+          {
+            title: "Logout",
+            link: "/logout"
           }
         ],
         notLogged: [

@@ -1,4 +1,5 @@
 export default {
-  isAuthenticated: false,
+  isAuthenticated: localStorage.getItem('token') ? true : false,
+  token: localStorage.getItem('token') || '',
   user: {},
 }
