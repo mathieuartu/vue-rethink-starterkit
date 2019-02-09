@@ -27,12 +27,10 @@ const generateSuccessMessage = content => {
 }
 
 
+
 //GET
 
-routes.get('/api/status', (req, res) => {
-  res.send({ status: 'ok' });
-})
-
+//GET get json list of all users
 routes.get('/api/users', (req, res) => {
   rethink(c => {
     r.table('users').run(c, (err, response) => {
@@ -41,9 +39,24 @@ routes.get('/api/users', (req, res) => {
   })
 })
 
+//POST get json of a specific user
+routes.post('/api/user', (req, res) => {
+  rethink(c => {
+    const { token } = req.body
 
-//POST
+    jwt.verify(token, secret, (err, token) => {
+      //Since we signed the JWT with the original user object, we get the original object when verifying
+      const { id } = token
+      r.table('users').filter({ id }).run(c, (err, response) => {
+        sendJson(err, response, res)
+      })
+    })
 
+  })
+})
+
+
+//POST log a user in
 routes.post('/api/users/login', (req, res) => {
   rethink(c => {
     r.table('users').filter({ username: req.body.username }).run(c, (err, response) => {
@@ -53,8 +66,8 @@ routes.post('/api/users/login', (req, res) => {
         if (userExists) {
           bcrypt.compare(req.body.password, user.hash).then(isPasswordChecked => {
             if (isPasswordChecked) {
-              //JWT
-              jwt.sign({ user }, secret, { expiresIn: '1h' }, (err, token) => {
+              //Generate JWT
+              jwt.sign({ id: user.id }, secret, { expiresIn: '1h' }, (err, token) => {
                 if (err) console.log(err)
                 res.send(generateSuccessMessage({
                   token,
@@ -72,6 +85,7 @@ routes.post('/api/users/login', (req, res) => {
   })
 })
 
+//POST sign a user up
 routes.post('/api/users/signup', (req, res) => {
   rethink(c => {
     r.table('users').filter({ username: req.body.username }).run(c, (err, response) => {
@@ -87,11 +101,10 @@ routes.post('/api/users/signup', (req, res) => {
               username,
               hash,
             }).run(c, (err, response) => {
-              const key = response.generated_keys[0]
-              r.table('users').get(key).run(c, (err, response) => {
-                //Send back the user object and log him in
-                //JWT
-                jwt.sign({ key }, secret, { expiresIn: '1h' }, (err, token) => {
+              const id = response.generated_keys[0]
+              r.table('users').get(id).run(c, (err, response) => {
+                //Send back the token and log him in
+                jwt.sign({ id }, secret, { expiresIn: '1h' }, (err, token) => {
                   if (err) console.log(err)
                   res.send(generateSuccessMessage({
                     token,

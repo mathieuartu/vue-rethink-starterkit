@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
-import Signup from '@/components/Signup'
-import Login from '@/components/Login'
-import Logout from '@/components/Logout'
+import store from '@/vuex/store'
+
+import e404 from '@/pages/errors/404'
+import e503 from '@/pages/errors/503'
+import Home from '@/pages/Home'
+import Signup from '@/pages/Signup'
+import Login from '@/pages/Login'
+import Logout from '@/pages/Logout'
 
 Vue.use(Router)
 
@@ -17,8 +21,13 @@ const router = new Router({
     },
     {
       path: '*',
-      name: 'All',
-      component: Home
+      name: 'e404',
+      component: e404
+    },
+    {
+      path: '/503',
+      name: 'e503',
+      component: e503
     },
     {
       path: '/signup',
@@ -45,6 +54,18 @@ const router = new Router({
       }
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (store.state.isAuthenticated) {
+      next()
+      return
+    }
+    next('/503')
+  } else {
+    next()
+  }
 })
 
 export default router

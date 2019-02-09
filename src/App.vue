@@ -1,13 +1,18 @@
 <template>
   <div id="app">
+    <Menu/>
     <router-view/>
   </div>
 </template>
 
 <script>
+import Menu from "@/components/Menu"
 
 export default {
-  name: 'App'
+  name: "App",
+  components: {
+    Menu
+  }
 }
 </script>
 

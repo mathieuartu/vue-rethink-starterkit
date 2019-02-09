@@ -26,6 +26,10 @@ export default {
         ],
         notLogged: [
           {
+            title: "Accueil",
+            link: "/"
+          },
+          {
             title: "Inscription",
             link: "/signup"
           },
