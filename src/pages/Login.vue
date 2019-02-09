@@ -3,11 +3,11 @@
     <fieldset>
       <label>
         <span>username :</span>
-        <input type="text" v-model="username">
+        <input type="text" v-model="username" required>
       </label>
       <label>
         <span>password :</span>
-        <input type="text" v-model="password">
+        <input type="text" v-model="password" required>
       </label>
       <button>Login</button>
       <p v-if="errorMessage">{{errorMessage}}</p>
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { errorMessages } from "@/tools/errorMessages"
+
 export default {
   data() {
     return {
@@ -27,6 +29,8 @@ export default {
   methods: {
     login() {
       const vm = this
+
+      //Post
       vm.$http
         .post("http://localhost:5000/api/users/login", {
           username: this.username,
@@ -42,7 +46,8 @@ export default {
             localStorage.setItem("token", data.content.token)
             vm.$router.push("/")
           } else {
-            vm.errorMessage = data.content
+            console.log(errorMessages)
+            vm.errorMessage = errorMessages[data.content]
             localStorage.removeItem("token")
           }
         })
