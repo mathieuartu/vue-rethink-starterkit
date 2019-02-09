@@ -3,6 +3,13 @@
 This project is built around the idea to have a instant boilerplate for any new idea.
 Authentication is already built-in.
 It leverages the use of Vue, Vuex, Vue-Router, Rethinkdb and JWT
+Don't forget to add a .env file with at least these contents : 
+
+```
+DB_NAME= your rethinkdb database name
+DB_PORT= your rethinkdb port
+SECRET= your secret key to hash passwords and jwt
+```
 
 ## Project setup
 ```
