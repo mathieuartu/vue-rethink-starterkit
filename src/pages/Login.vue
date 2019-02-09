@@ -46,7 +46,6 @@ export default {
             localStorage.setItem("token", data.content.token)
             vm.$router.push("/")
           } else {
-            console.log(errorMessages)
             vm.errorMessage = errorMessages[data.content]
             localStorage.removeItem("token")
           }
