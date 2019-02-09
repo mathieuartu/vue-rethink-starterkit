@@ -1,5 +1,9 @@
 # vue-rethink-starterkit
 
+This project is built around the idea to have a instant boilerplate for any new idea.
+Authentication is already built-in.
+It leverages the use of Vue, Vuex, Vue-Router, Rethinkdb and JWT
+
 ## Project setup
 ```
 yarn install
