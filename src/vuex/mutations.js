@@ -8,5 +8,12 @@ export default {
     state.isAuthenticated = false
     state.user = null
     state.token = null
-  }
+  },
+  setUserToken(state, data) {
+    state.token = data.token
+  },
+  setUser(state, data) {
+    state.user = data.user
+  },
+
 }

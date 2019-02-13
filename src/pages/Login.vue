@@ -29,37 +29,18 @@ export default {
   methods: {
     login() {
       const vm = this
+      const { username, password } = this
 
-      //Post
-      vm.$http
-        .post("http://localhost:5000/api/users/login", {
-          username: this.username,
-          password: this.password
-        })
-        .then(function(res) {
-          const { data } = res
-          if (!data.error) {
-            vm.$http.defaults.headers.common["Authorization"] =
-              data.content.token
-            vm.errorMessage = ""
-            vm.$store.commit("logUserIn", data.content)
-            localStorage.setItem("token", data.content.token)
-            vm.$router.push("/")
-          } else {
-            vm.errorMessage = errorMessages[data.content]
-            localStorage.removeItem("token")
-          }
-        })
+      this.$store.dispatch('logUserIn', { username, password })
+      .then(()=> {
+        vm.errorMessage = ''
+        vm.$router.push("/")
+      })
+      .catch((errorMessage) => {
+        vm.errorMessage = errorMessages[errorMessage]
+      })
     }
   },
-  computed: {
-    user() {
-      return this.$store.state.user
-    },
-    isLogged() {
-      return this.$store.state.isAuthenticated
-    }
-  }
 }
 </script>
 

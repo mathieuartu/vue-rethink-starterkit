@@ -29,8 +29,10 @@ export default {
   methods: {
     signup() {
       const vm = this
+      const { username, password } = this
+
       const regex = RegExp("^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*)$")
-      const isPasswordValid = !regex.test(this.password)
+      const isPasswordValid = !regex.test(password)
 
       //Client side-verification
       if (!isPasswordValid) {
@@ -38,25 +40,14 @@ export default {
       }
 
       //Send info to the server
-      vm.$http
-        .post("http://localhost:5000/api/users/signup", {
-          username: this.username,
-          password: this.password
-        })
-        .then(res => {
-          const { data } = res
-          if (!data.error) {
-            vm.$http.defaults.headers.common["Authorization"] =
-              data.content.token
-            vm.errorMessage = ""
-            vm.$store.commit("logUserIn", data.content)
-            localStorage.setItem("token", data.content.token)
-            vm.$router.push("/")
-          } else {
-            vm.errorMessage = errorMessages[data.content]
-            localStorage.removeItem("token")
-          }
-        })
+      this.$store.dispatch('signUserUp', { username, password })
+      .then(()=> {
+        vm.errorMessage = ''
+        vm.$router.push("/")
+      })
+      .catch((errorMessage) => {
+        vm.errorMessage = errorMessages[errorMessage]
+      })
     }
   }
 }

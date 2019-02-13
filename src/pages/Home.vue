@@ -1,31 +1,24 @@
 <template>
   <div>
-    <p v-if="isAuthenticated">Bienvenue {{user.username}}</p>
+    <p v-if="isAuthenticated">Bienvenue {{user && user.username}}</p>
   </div>
 </template>
 
 <script>
 export default {
   name: "Home",
-  created() {
-    const vm = this
-    if (this.$store.state.isAuthenticated) {
-      const { token } = this.$store.state
-      this.$http
-        .post("http://localhost:5000/api/user", { token })
-        .then(response => {
-          vm.user = response.data[0]
-        })
-    }
-  },
-  data() {
-    return {
-      user: {}
-    }
-  },
   computed: {
     isAuthenticated() {
       return this.$store.state.isAuthenticated
+    },
+  },
+  asyncComputed: {
+    user() {
+      if(!this.$store.state.user) {
+        return this.$store.dispatch('getUser')
+      } else {
+        return this.$store.state.user
+      }
     }
   }
 }

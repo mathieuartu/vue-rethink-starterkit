@@ -26,7 +26,7 @@ app.use((error, req, res, next) => {
 
 //Rethinkdb
 //Db init & imports
-import { rethink, sendJson, initDb } from './rethinkdb.js'
+import { rethink, initDb } from './rethinkdb.js'
 rethink(c => initDb(c)) //Dev only
 
 //API
