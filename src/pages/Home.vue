@@ -14,7 +14,7 @@ export default {
   },
   asyncComputed: {
     user() {
-      if(!this.$store.state.user) {
+      if(!this.$store.state.user && this.$store.state.isAuthenticated) {
         return this.$store.dispatch('getUser')
       } else {
         return this.$store.state.user

@@ -43,7 +43,9 @@ routes.get('/api/users', (req, res) => {
 routes.post('/api/user', (req, res) => {
   rethink(c => {
     const { token } = req.body
-
+    if (!token) {
+      return res.sendStatus(500)
+    }
     jwt.verify(token, secret, (err, token) => {
       //Since we signed the JWT with the original user object, we get the original object when verifying
       const { id } = token
