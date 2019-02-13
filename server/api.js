@@ -104,7 +104,7 @@ routes.post('/api/users/signup', (req, res) => {
               hash,
             }).run(c, (err, response) => {
               const id = response.generated_keys[0]
-              r.table('users').get(id).run(c, (err, response) => {
+              r.table('users').get(id).run(c, () => {
                 //Send back the token and log him in
                 jwt.sign({ id }, secret, { expiresIn: '1h' }, (err, token) => {
                   if (err) console.log(err)

@@ -53,7 +53,7 @@ export default {
   },
 
   getUser(context) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fetchUser(context.state.token).then(user => {
         context.commit('setUser', { user })
         resolve(user)
