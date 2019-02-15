@@ -5,6 +5,9 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { rethink, sendJson } from './rethinkdb.js'
 
+import nodemailer from 'nodemailer'
+import { signupTemplate } from './email_templates/signupTemplate'
+
 export const routes = express.Router();
 
 dotenv.load()
@@ -24,6 +27,29 @@ const generateSuccessMessage = content => {
     content,
     error: false,
   }
+}
+
+const sendEmail = async info => {
+  let transporter = nodemailer.createTransport({
+    host: "in-v3.mailjet.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.MAILJET_KEY, // generated ethereal user
+      pass: process.env.MAILJET_PASS // generated ethereal password
+    }
+  })
+
+  // send mail with defined transport object
+  let message = await transporter.sendMail({
+    from: `"${process.env.SITE_NAME} 👻" <admin@hyprstrike.com>`, // sender address
+    to: "mathieu.artu@gmail.com", // list of receivers
+    subject: `Bienvenue sur ${process.env.SITE_NAME} 👋`, // Subject line
+    text: "Hello world?", // plain text body
+    html: signupTemplate(info) // html body
+  })
+
+  console.log("Message sent: %s", message.messageId)
 }
 
 
@@ -97,10 +123,11 @@ routes.post('/api/users/signup', (req, res) => {
           res.send(generateErrorMessage('user_already_exists'))
         } else {
           //Write user in db
-          const { username, password } = req.body
+          const { username, password, email } = req.body
           bcrypt.hash(password, 10).then(hash => {
             r.table('users').insert({
               username,
+              email,
               hash,
             }).run(c, (err, response) => {
               const id = response.generated_keys[0]
@@ -108,6 +135,11 @@ routes.post('/api/users/signup', (req, res) => {
                 //Send back the token and log him in
                 jwt.sign({ id }, secret, { expiresIn: '1h' }, (err, token) => {
                   if (err) console.log(err)
+                  //Send email
+                  sendEmail({
+                    siteName: process.env.SITE_NAME,
+                    username
+                  })
                   res.send(generateSuccessMessage({
                     token,
                   }))

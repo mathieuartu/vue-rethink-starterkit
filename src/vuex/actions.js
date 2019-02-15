@@ -13,10 +13,7 @@ const fetchUser = token => {
 
 const loginSignupUser = (context, userInfo, method) => {
   return new Promise((resolve, reject) => {
-    const { username, password } = userInfo
-    axios.post(`http://localhost:5000/api/users/${method}`, {
-      username, password,
-    }).then(response => {
+    axios.post(`http://localhost:5000/api/users/${method}`, userInfo).then(response => {
       const { data } = response
 
       if (!data.error) {
@@ -39,11 +36,11 @@ const loginSignupUser = (context, userInfo, method) => {
 
 export default {
   logUserIn(context, userInfo) {
-    loginSignupUser(context, userInfo, 'login')
+    return loginSignupUser(context, userInfo, 'login')
   },
 
   signUserUp(context, userInfo) {
-    loginSignupUser(context, userInfo, 'signup')
+    return loginSignupUser(context, userInfo, 'signup')
   },
 
   logUserOut(context) {

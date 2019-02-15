@@ -21,9 +21,9 @@ import { errorMessages } from "@/tools/errorMessages"
 export default {
   data() {
     return {
-      username: "",
-      password: "",
-      errorMessage: ""
+      username: null,
+      password: null,
+      errorMessage: null,
     }
   },
   methods: {
@@ -37,8 +37,8 @@ export default {
         vm.$router.push("/")
       })
       .catch((errorMessage) => {
-        vm.errorMessage = errorMessages[errorMessage]
-      })
+        return vm.errorMessage = errorMessages[errorMessage]
+      })      
     }
   },
 }

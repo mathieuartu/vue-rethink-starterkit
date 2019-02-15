@@ -7,10 +7,10 @@
 <script>
 export default {
   name: "Home",
-  computed: {
-    isAuthenticated() {
-      return this.$store.state.isAuthenticated
-    },
+  data() {
+    return {
+      user: {},
+    }
   },
   asyncComputed: {
     user() {
@@ -20,6 +20,11 @@ export default {
         return this.$store.state.user
       }
     }
+  },
+  computed: {
+    isAuthenticated() {
+      return this.$store.state.isAuthenticated
+    },
   }
 }
 </script>
