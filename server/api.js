@@ -29,27 +29,37 @@ const generateSuccessMessage = content => {
   }
 }
 
-const sendEmail = async info => {
+const sendEmail = async (type, info) => {
+
+  const { SITE_NAME, ADMIN_EMAIL, MAILJET_KEY, MAILJET_PASS } = process.env
+  const { username, email } = info
+
   let transporter = nodemailer.createTransport({
     host: "in-v3.mailjet.com",
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: process.env.MAILJET_KEY, // generated ethereal user
-      pass: process.env.MAILJET_PASS // generated ethereal password
+      user: MAILJET_KEY, // generated ethereal user
+      pass: MAILJET_PASS // generated ethereal password
     }
   })
 
-  // send mail with defined transport object
-  let message = await transporter.sendMail({
-    from: `"${process.env.SITE_NAME} 👻" <admin@hyprstrike.com>`, // sender address
-    to: "mathieu.artu@gmail.com", // list of receivers
-    subject: `Bienvenue sur ${process.env.SITE_NAME} 👋`, // Subject line
-    text: "Hello world?", // plain text body
-    html: signupTemplate(info) // html body
-  })
 
-  console.log("Message sent: %s", message.messageId)
+  // send mail with defined transport object
+  if (type === 'signup') {
+    let message = await transporter.sendMail({
+      from: `"${SITE_NAME} 👻" <${ADMIN_EMAIL}>`, // sender address
+      to: email, // list of receivers
+      subject: `Bienvenue sur ${SITE_NAME} 👋`, // Subject line
+      text: "Hello world?", // plain text body
+      html: signupTemplate({
+        siteName: SITE_NAME,
+        username,
+      })
+    })
+
+    console.log("Message sent: %s", message.messageId)
+  }
 }
 
 
@@ -136,9 +146,9 @@ routes.post('/api/users/signup', (req, res) => {
                 jwt.sign({ id }, secret, { expiresIn: '1h' }, (err, token) => {
                   if (err) console.log(err)
                   //Send email
-                  sendEmail({
-                    siteName: process.env.SITE_NAME,
-                    username
+                  sendEmail('signup', {
+                    username,
+                    email
                   })
                   res.send(generateSuccessMessage({
                     token,
