@@ -11,7 +11,7 @@
       </label>
       <label>
         <span>password :</span>
-        <input type="text" v-model="password" name="password" required>
+        <input type="password" v-model="password" name="password" required>
       </label>
       <button>Signup</button>
       <p v-if="errorMessage">{{errorMessage}}</p>

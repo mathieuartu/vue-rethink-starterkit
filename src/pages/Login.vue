@@ -3,11 +3,11 @@
     <fieldset>
       <label>
         <span>username :</span>
-        <input type="text" v-model="username" required>
+        <input type="text" v-model="username" name="username" required>
       </label>
       <label>
         <span>password :</span>
-        <input type="text" v-model="password" required>
+        <input type="password" v-model="password" name="password" required>
       </label>
       <button>Login</button>
       <p v-if="errorMessage">{{errorMessage}}</p>
