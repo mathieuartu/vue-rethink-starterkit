@@ -11,7 +11,7 @@
       </label>
       <label>
         <span>password :</span>
-        <input type="password" v-model="password" name="password" required>
+        <input type="text" v-model="password" name="password" required>
       </label>
       <button>Signup</button>
       <p v-if="errorMessage">{{errorMessage}}</p>
@@ -46,12 +46,12 @@ export default {
       //Send info to the server
       try {
         await this.$store.dispatch('signUserUp', { username, password, email })
+        this.errorMessage = ''
+        this.$router.push("/")
       } catch(errorMessage) {
         this.errorMessage = errorMessages[errorMessage]
       }
 
-      this.errorMessage = ''
-      this.$router.push("/")
     },
   },
 }

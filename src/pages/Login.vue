@@ -32,12 +32,12 @@ export default {
 
       try {
         await this.$store.dispatch('logUserIn', { username, password })
+        this.errorMessage = ''
+        this.$router.push("/")
       } catch(errorMessage) {
-        vm.errorMessage = errorMessages[errorMessage]
+        this.errorMessage = errorMessages[errorMessage]
       }
-      
-      this.errorMessage = ''
-      this.$router.push("/")
+
     },
   },
 }

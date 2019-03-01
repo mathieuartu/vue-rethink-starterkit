@@ -3,7 +3,7 @@ import r from 'rethinkdb'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
-import { rethink, sendJson } from './rethinkdb.js'
+import { rethink, rethinkToArray } from './rethinkdb.js'
 
 import nodemailer from 'nodemailer'
 import { signupTemplate } from './email_templates/signupTemplate'
@@ -64,32 +64,53 @@ const sendEmail = async (type, info) => {
 
 
 
-//GET
+//AUTH MIDDLEWARE
+const authMiddleware = (req, res, next) => {
+  const auth = req.headers.authorization
 
-//GET get json list of all users
-routes.get('/api/users', (req, res) => {
+  if (!auth || auth.split(' ')[0] !== 'Bearer') {
+    res.sendStatus(403)
+  }
+
+  const token = auth.split(' ')[1]
+
+  if (!token) {
+    return res.sendStatus(403)
+  }
+
+  jwt.verify(token, secret, (err, token) => {
+
+    if ((token && !token.id) || err) res.sendStatus(498)
+
+    req.locals = { token }
+    next()
+
+  })
+}
+
+
+//GET get json list of all users : PROTECTED
+routes.get('/api/users', authMiddleware, (req, res) => {
   rethink(c => {
-    r.table('users').run(c, (err, response) => {
-      sendJson(err, response, res)
+    r.table('users').run(c, async (err, response) => {
+      const users = await rethinkToArray(err, response)
+      res.send(users)
     })
   })
 })
 
-//POST get json of a specific user
-routes.post('/api/user', (req, res) => {
+//GET get json of a specific user : PROTECTED
+routes.get('/api/user', authMiddleware, (req, res) => {
   rethink(c => {
-    const { token } = req.body
-    if (!token) {
-      return res.sendStatus(500)
-    }
-    jwt.verify(token, secret, (err, token) => {
-      //Since we signed the JWT with the original user object, we get the original object when verifying
-      const { id } = token
-      r.table('users').filter({ id }).run(c, (err, response) => {
-        sendJson(err, response, res)
-      })
-    })
+    const { id } = req.locals.token
 
+    //Since we signed the JWT with the original user object, we get the original object when verifying
+    r.table('users').filter({ id }).run(c, async (err, response) => {
+      const user = await rethinkToArray(err, response)
+      if (!user || !user.length) res.sendStatus(404)
+
+      res.send(user)
+    })
   })
 })
 

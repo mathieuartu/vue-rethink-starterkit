@@ -12,12 +12,10 @@ export const rethink = cb => {
   })
 }
 
-export const sendJson = (err, response, res) => {
+export const rethinkToArray = async (err, response) => {
   if (err) throw err
-  response.toArray((err, response) => {
-    if (err) throw err
-    res.send(response)
-  })
+  const responseArray = await response.toArray()
+  return responseArray
 }
 
 //INIT DB - ONLY FOR DEV

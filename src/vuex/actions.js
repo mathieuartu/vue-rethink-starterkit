@@ -1,12 +1,12 @@
 import axios from 'axios'
 
-const fetchUser = async token => {
-  const response = await axios.post("http://localhost:5000/api/user", {
-    token
-  })
-  const { data } = response
-  if (data.error) throw data.error
-  return response.data[0]
+const fetchUser = async () => {
+  try {
+    const response = await axios.get("http://localhost:5000/api/user")
+    return response.data[0]
+  } catch (error) {
+    throw error
+  }
 }
 
 const loginSignupUser = async (context, userInfo, method) => {
@@ -19,11 +19,11 @@ const loginSignupUser = async (context, userInfo, method) => {
   }
 
   const { token } = data.content
-  axios.defaults.headers.common["Authorization"] = token
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
   localStorage.setItem("token", token)
 
-  const user = await fetchUser(token)
-  context.commit("logUserIn", { token, user })
+  const user = await fetchUser()
+  context.commit("logUserIn", user)
 }
 
 export default {
@@ -36,11 +36,16 @@ export default {
   },
 
   logUserOut(context) {
+    localStorage.removeItem("token")
     context.commit('logUserOut')
   },
 
   async getUser(context) {
-    const user = await fetchUser(context.state.token)
-    context.commit('setUser', { user })
+    try {
+      const user = await fetchUser()
+      context.commit('setUser', { user })
+    } catch (error) {
+      context.dispatch('logUserOut')
+    }
   },
 }

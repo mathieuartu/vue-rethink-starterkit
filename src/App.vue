@@ -11,7 +11,7 @@ import Menu from "@/components/Menu"
 export default {
   name: "App",
   created() {
-     if(!this.$store.state.user && this.$store.state.isAuthenticated) {
+    if(!this.$store.state.user && this.$store.state.isAuthenticated) {
       this.$store.dispatch('getUser')
     }
   },
