@@ -5,14 +5,11 @@
 
 <script>
 export default {
-  created() {
-    const vm = this
+  async created() {
     localStorage.removeItem("token")
     delete this.$http.defaults.headers.common["Authorization"]
-    this.$store.dispatch("logUserOut").then(()=> {
-      vm.$router.push("/")
-    })
-    
+    await this.$store.dispatch("logUserOut")
+    this.$router.push("/")  
   }
 }
 </script>

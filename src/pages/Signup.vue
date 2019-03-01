@@ -32,8 +32,7 @@ export default {
     }
   },
   methods: {
-    signup() {
-      const vm = this
+    async signup() {
       const { username, password, email } = this
 
       const regex = RegExp("^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*)$")
@@ -45,16 +44,16 @@ export default {
       }
 
       //Send info to the server
-      this.$store.dispatch('signUserUp', { username, password, email })
-      .then(()=> {
-        vm.errorMessage = ''
-        vm.$router.push("/")
-      })
-      .catch((errorMessage) => {
-        return vm.errorMessage = errorMessages[errorMessage]
-      })
-    }
-  }
+      try {
+        await this.$store.dispatch('signUserUp', { username, password, email })
+      } catch(errorMessage) {
+        this.errorMessage = errorMessages[errorMessage]
+      }
+
+      this.errorMessage = ''
+      this.$router.push("/")
+    },
+  },
 }
 </script>
 

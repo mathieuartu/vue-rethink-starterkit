@@ -27,19 +27,18 @@ export default {
     }
   },
   methods: {
-    login() {
-      const vm = this
+    async login() {
       const { username, password } = this
 
-      this.$store.dispatch('logUserIn', { username, password })
-      .then(()=> {
-        vm.errorMessage = ''
-        vm.$router.push("/")
-      })
-      .catch((errorMessage) => {
-        return vm.errorMessage = errorMessages[errorMessage]
-      })      
-    }
+      try {
+        await this.$store.dispatch('logUserIn', { username, password })
+      } catch(errorMessage) {
+        vm.errorMessage = errorMessages[errorMessage]
+      }
+      
+      this.errorMessage = ''
+      this.$router.push("/")
+    },
   },
 }
 </script>

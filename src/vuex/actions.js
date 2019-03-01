@@ -1,37 +1,29 @@
 import axios from 'axios'
 
-const fetchUser = token => {
-  return new Promise((resolve, reject) => {
-    axios.post("http://localhost:5000/api/user", {
-      token
-    }).then(response => {
-      const user = response.data[0]
-      resolve(user)
-    }).catch(err => reject(err))
+const fetchUser = async token => {
+  const response = await axios.post("http://localhost:5000/api/user", {
+    token
   })
+  const { data } = response
+  if (data.error) throw data.error
+  return response.data[0]
 }
 
-const loginSignupUser = (context, userInfo, method) => {
-  return new Promise((resolve, reject) => {
-    axios.post(`http://localhost:5000/api/users/${method}`, userInfo).then(response => {
-      const { data } = response
+const loginSignupUser = async (context, userInfo, method) => {
+  const response = await axios.post(`http://localhost:5000/api/users/${method}`, userInfo)
+  const { data } = response
 
-      if (!data.error) {
-        const { token } = data.content
-        axios.defaults.headers.common["Authorization"] = token
-        localStorage.setItem("token", token)
+  if (data.error) {
+    localStorage.removeItem("token")
+    throw data.content
+  }
 
-        fetchUser(token).then(user => {
-          context.commit("logUserIn", { token, user })
-          resolve()
-        })
+  const { token } = data.content
+  axios.defaults.headers.common["Authorization"] = token
+  localStorage.setItem("token", token)
 
-      } else {
-        localStorage.removeItem("token")
-        reject(data.content)
-      }
-    })
-  })
+  const user = await fetchUser(token)
+  context.commit("logUserIn", { token, user })
 }
 
 export default {
@@ -44,17 +36,11 @@ export default {
   },
 
   logUserOut(context) {
-    return new Promise((resolve) => {
-      resolve(context.commit('logUserOut'))
-    })
+    context.commit('logUserOut')
   },
 
-  getUser(context) {
-    return new Promise((resolve) => {
-      fetchUser(context.state.token).then(user => {
-        context.commit('setUser', { user })
-        resolve(user)
-      })
-    })
-  }
+  async getUser(context) {
+    const user = await fetchUser(context.state.token)
+    context.commit('setUser', { user })
+  },
 }
