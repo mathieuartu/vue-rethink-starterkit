@@ -15,19 +15,15 @@ dotenv.load()
 const secret = process.env.SECRET
 
 //Error helpers
-const generateErrorMessage = content => {
-  return {
-    content,
-    error: true,
-  }
-}
+const generateErrorMessage = content => ({
+  content,
+  error: true,
+})
 
-const generateSuccessMessage = content => {
-  return {
-    content,
-    error: false,
-  }
-}
+const generateSuccessMessage = content => ({
+  content,
+  error: false,
+})
 
 const sendEmail = async (type, info) => {
 
