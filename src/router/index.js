@@ -8,6 +8,7 @@ import Home from '@/pages/Home'
 import Signup from '@/pages/Signup'
 import Login from '@/pages/Login'
 import Logout from '@/pages/Logout'
+import MyAccount from '@/pages/MyAccount'
 
 Vue.use(Router)
 
@@ -52,7 +53,15 @@ const router = new Router({
       meta: {
         requiresAuth: true
       }
-    }
+    },
+    {
+      path: '/account',
+      name: 'MyAccount',
+      component: MyAccount,
+      meta: {
+        requiresAuth: true,
+      },
+    },
   ]
 })
 

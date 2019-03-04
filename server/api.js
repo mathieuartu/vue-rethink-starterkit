@@ -109,7 +109,7 @@ routes.get('/api/user', authMiddleware, (req, res) => {
       const user = await rethinkToArray(err, response)
       if (!user || !user.length) res.sendStatus(404)
 
-      res.send(user)
+      res.send(user[0])
     })
   })
 })
@@ -179,6 +179,29 @@ routes.post('/api/users/signup', (req, res) => {
             })
           })
         }
+      })
+    })
+  })
+})
+
+
+//PATCH update user password
+routes.patch('/api/user/password', authMiddleware, (req, res) => {
+  const { oldPassword, newPassword } = req.body
+  const { id } = req.locals.token
+
+  //Since we signed the JWT with the original user object, we get the original object when verifying
+  rethink(c => {
+    r.table('users').filter({ id }).run(c, async (err, response) => {
+      const user = await rethinkToArray(err, response)
+
+      if (! await bcrypt.compare(oldPassword, user[0].hash)) {
+        return res.status(403).send(generateErrorMessage('old_password_does_not_match'))
+      }
+
+      const newHash = await bcrypt.hash(newPassword, 10)
+      r.table('users').get(id).update({ hash: newHash }).run(c, (err, response) => {
+        res.status(202).send(generateSuccessMessage())
       })
     })
   })

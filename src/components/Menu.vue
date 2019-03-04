@@ -19,6 +19,10 @@ export default {
             title: "Accueil",
             link: "/"
           },
+                    {
+            title: "Mon compte",
+            link: "/account"
+          },
           {
             title: "Logout",
             link: "/logout"
@@ -55,20 +59,25 @@ export default {
 }
 </script>
 
-<style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+<style lang="scss" scoped>
+.menu {
+  margin-bottom: 40px;
+  padding: 20px;
+  border: 1px solid #eee;
+  h1,
+  h2 {
+    font-weight: normal;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  li {
+    display: inline-block;
+    margin: 0 10px;
+  }
+  a {
+    color: #42b983;
+  }
 }
 </style>

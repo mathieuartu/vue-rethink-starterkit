@@ -3,7 +3,7 @@ import axios from 'axios'
 const fetchUser = async () => {
   try {
     const response = await axios.get("http://localhost:5000/api/user")
-    return response.data[0]
+    return response.data
   } catch (error) {
     throw error
   }
@@ -46,6 +46,15 @@ export default {
       context.commit('setUser', { user })
     } catch (error) {
       context.dispatch('logUserOut')
+    }
+  },
+
+  async updateUserPassword(context, passwordInfo) {
+    const { oldPassword, newPassword } = passwordInfo
+    try {
+      await axios.patch('http://localhost:5000/api/user/password', { oldPassword, newPassword })
+    } catch (error) {
+      throw error.response.data
     }
   },
 }
