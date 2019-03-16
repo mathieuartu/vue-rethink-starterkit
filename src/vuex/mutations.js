@@ -1,4 +1,7 @@
 export default {
+  setLoadingState(state, loadingState) {
+    state.isLoading = loadingState
+  },
   logUserIn(state, user) {
     state.isAuthenticated = true
     state.user = user
