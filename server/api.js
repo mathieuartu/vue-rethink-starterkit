@@ -202,3 +202,14 @@ routes.patch('/api/user/password', authMiddleware, (req, res) => {
     })
   })
 })
+
+//DELETE delete own user account : PROTECTED
+routes.delete('/api/user', authMiddleware, (req, res) => {
+  const { id } = req.locals.token
+
+  rethink(c => {
+    r.table('users').get(id).delete().run(c, () => {
+      res.status(200).send(generateSuccessMessage())
+    })
+  })
+})

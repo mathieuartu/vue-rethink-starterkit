@@ -59,6 +59,12 @@ export default {
 
       this.errorMessage = null
 
+    },
+    async deleteAccount() {
+      const sure = confirm('Êtes vous sûr de vouloir supprimer votre compte ?')
+      if(!sure) return
+      await this.$store.dispatch('deleteAccount')
+      this.$router.push('/')
     }
   }
 }

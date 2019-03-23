@@ -57,4 +57,13 @@ export default {
       throw error.response.data
     }
   },
+
+  async deleteAccount(context) {
+    try {
+      await axios.delete('http://localhost:5000/api/user')
+      context.dispatch('logUserOut')
+    } catch (e) {
+      throw e;
+    }
+  },
 }
